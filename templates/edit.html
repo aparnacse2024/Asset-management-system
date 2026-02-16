@@ -1,0 +1,15 @@
+
+{% extends "base.html" %}
+{% block content %}
+<h3>Edit {{ name }}</h3>
+<form method="POST" action="/update/{{name}}/{{row_id}}" class="row g-2">
+{% for h in headers %}
+<div class="col-md-3">
+<input name="{{h}}" value="{{row[loop.index0]}}" class="form-control" required>
+</div>
+{% endfor %}
+<div class="col-12">
+<button class="btn btn-success">Update</button>
+</div>
+</form>
+{% endblock %}
