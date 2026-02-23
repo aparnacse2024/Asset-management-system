@@ -1,58 +1,87 @@
-
 {% extends "base.html" %}
 {% block content %}
+
 <h2 class="mb-3 text-capitalize">{{ name }}</h2>
 
+<!-- Search Form -->
 <form method="GET" class="mb-3">
-  <input type="text" name="search" placeholder="Search..." class="form-control w-25 d-inline">
+  <input type="text" name="search" placeholder="Search..." 
+         class="form-control w-25 d-inline">
   <button class="btn btn-secondary">Search</button>
 </form>
 
+<!-- Add Record Card -->
 <div class="card p-3 mb-4 shadow">
 <form method="POST" action="/add/{{ name }}" class="row g-2">
+
 {% for h in headers %}
 <div class="col-md-3">
+
 {% if name == 'transactions' and h == 'EmployeeID' %}
 <select name="{{h}}" class="form-control">
-{% for e in employees %}
-<option value="{{e[0]}}">{{e[1]}}</option>
-{% endfor %}
+  {% for e in employees %}
+  <option value="{{e[0]}}">{{e[1]}}</option>
+  {% endfor %}
 </select>
+
 {% elif name == 'transactions' and h == 'AssetID' %}
 <select name="{{h}}" class="form-control">
-{% for a in assets %}
-<option value="{{a[0]}}">{{a[1]}}</option>
-{% endfor %}
+  {% for a in assets %}
+  <option value="{{a[0]}}">{{a[1]}}</option>
+  {% endfor %}
 </select>
+
 {% else %}
-<input name="{{h}}" placeholder="{{h}}" class="form-control" required>
+<input name="{{h}}" placeholder="{{h}}" 
+       class="form-control" required>
 {% endif %}
+
 </div>
 {% endfor %}
+
 <div class="col-12">
 <button class="btn btn-dark">Add Record</button>
 </div>
+
 </form>
 </div>
 
+<!-- Data Table -->
 <table class="table table-bordered table-striped">
 <thead class="table-dark">
 <tr>
-{% for h in headers %}<th>{{h}}</th>{% endfor %}
+{% for h in headers %}
+<th>{{h}}</th>
+{% endfor %}
 <th>Actions</th>
 </tr>
 </thead>
+
 <tbody>
 {% for row in rows %}
 <tr>
-{% for col in row %}<td>{{col}}</td>{% endfor %}
+
+{% for col in row %}
+<td>{{col}}</td>
+{% endfor %}
+
 <td>
-<a href="/edit/{{name}}/{{loop.index0}}" class="btn btn-sm btn-warning">Edit</a>
-<a href="/delete/{{name}}/{{loop.index0}}" class="btn btn-sm btn-danger"
-onclick="return confirm('Delete this record?')">Delete</a>
+<a href="/edit/{{name}}/{{loop.index0}}" 
+   class="btn btn-sm btn-warning">
+   Edit
+</a>
+
+<a href="/delete/{{name}}/{{loop.index0}}" 
+   class="btn btn-sm btn-danger"
+   onclick="return confirmDelete()">
+   Delete
+</a>
+
 </td>
+
 </tr>
 {% endfor %}
 </tbody>
 </table>
+
 {% endblock %}

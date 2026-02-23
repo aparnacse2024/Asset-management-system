@@ -31,6 +31,10 @@ def dashboard():
     }
     return render_template("dashboard.html", counts=counts)
 
+@app.route('/chatbot')
+def chatbot():
+    return render_template("chat.html")
+
 @app.route('/<name>')
 def view(name):
     wb, sheet, headers, rows = get_sheet(sheet_map(name))
@@ -85,6 +89,23 @@ def update(name, row_id):
         sheet.cell(row=row_id + 2, column=col).value = value
     wb.save(FILE)
     return redirect(url_for('view', name=name))
+
+
+@app.route('/chat', methods=['GET', 'POST'])
+def chat():
+    if request.method == "GET":
+        return "Chatbot is running. Use POST request."
+
+    message = request.form.get("message").lower()
+    
+    wb = load_workbook(FILE)
+
+    if "how many assets" in message:
+        sheet = wb["Assets"]
+        count = sheet.max_row - 1
+        return {"reply": f"Total assets are {count}"}
+
+    return {"reply": "Sorry, I didn't understand that."}
 
 if __name__ == "__main__":
     app.run(debug=True)
