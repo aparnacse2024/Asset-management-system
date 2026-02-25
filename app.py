@@ -138,8 +138,8 @@ def chatbot_logic(message):
     # -------------------------
     # SHOW ALL ASSETS
     # -------------------------
-    elif message == "assets" in message:
-        print("inside elif search assets------------------")
+    elif message == "show assets" in message:
+        print("inside elif show assets------------------")
         table_html = "<table border='1' style='border-collapse:collapse; width:100%; font-size:12px;'>"
 
         table_html += "<tr>"
@@ -160,9 +160,9 @@ def chatbot_logic(message):
 # -------------------------
 # SEARCH ASSET
 # -------------------------
-    elif message.startswith("show assets"):
-        print("Inside show asset section>>>>>>>>uui>>>>.")
-        keyword = message.replace("show assets", "").strip().lower()
+    elif message.startswith("search asset"):
+        print("Inside search asset section>>>>>>>>uui>>>>.")
+        keyword = message.replace("search asset", "").strip().lower()
         filtered = [r for r in asset_rows if keyword in str(r).lower()]
 
         if not filtered:
@@ -171,13 +171,13 @@ def chatbot_logic(message):
         return generate_specific_table(asset_headers, filtered, asset_columns)
     
 # REPLACE ASSET SECTION 
-    elif message.startswith("search assets"):
-            print("Inside search assets section>>>>>>>>>uuuu>>>>.")
+    elif message.startswith("range assets"):
+            print("Inside range assets section>>>>>>>>>uuuu>>>>.")
             filtered = filter_data(asset_headers, asset_rows, message)
 
-            print("MESSAGE:", message)
-            print("FILTERED DATA:", filtered)
-
+            # print("MESSAGE:", message)
+            # print("FILTERED DATA:", filtered)
+  
             if not filtered:
                 return "No matching assets found."
 
@@ -193,7 +193,7 @@ def chatbot_logic(message):
     # SHOW ALL EMPLOYEES
     # -------------------------
     elif message == "employees" or "show employees" in message:
-        print("inside elif search employees------------------")
+        print("inside elif show employees------------------")
         table_html = "<table border='1' style='border-collapse:collapse; width:100%; font-size:12px;'>"
         # add headers
         table_html += "<tr>"
@@ -226,8 +226,8 @@ def chatbot_logic(message):
         return generate_specific_table(emp_headers, filtered, employee_columns)
     
    # REPLACE EMPLOYEE SECTION
-    elif message.startswith("search employees"):
-        print("Inside search employees section>>>>>>>>>>>>>.")
+    elif message.startswith("range employees"):
+        print("Inside range employees section>>>>>>>>>>>>>.")
 
         filtered = filter_data(emp_headers, emp_rows, message)
 
@@ -251,8 +251,8 @@ def chatbot_logic(message):
     # -------------------------
     # SEARCH ASSET BY NAME
     # -------------------------
-    elif "asset" in message:
-        print("Inside search asset by name section>>>>>>>>>>>>>.")
+    elif message == "transactions" or "search transactions" in message:
+        print("Inside search transactions section>>>>>>>>>>>>>.")
         for row in asset_rows:
             for cell in row:
                 if message in str(cell).lower():
@@ -263,7 +263,7 @@ def chatbot_logic(message):
     # SHOW TRANSACTIONS
     # -------------------------
     elif message == "transactions" or "show transactions" in message:
-        print("inside elif search transactions------------------")
+        print("inside elif show transactions------------------")
         table_html = "<table border='1' style='border-collapse:collapse; width:100%; font-size:12px;'>"
 
         # Add headers
@@ -303,8 +303,8 @@ def chatbot_logic(message):
             return generate_specific_table(trans_headers, filtered, transaction_columns)
     
    # REPLACE TRANSACTION SECTION
-    elif message.startswith("search transactions"):
-        print("Inside search transactions section>>>>>>>>>>>>>.")
+    elif message.startswith("range transactions"):
+        print("Inside range transactions section>>>>>>>>>>>>>.")
 
         filtered = filter_data(trans_headers, trans_rows, message)
 
