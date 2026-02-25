@@ -24,6 +24,8 @@ transaction_columns = [
     "Condition","ApprovedBy","Remarks"
 ]
 
+
+
 def sheet_map(name):
     return {
         "assets": "Assets",
@@ -38,6 +40,45 @@ def get_sheet(name):
     headers = data[0]
     rows = data[1:]
     return wb, sheet, headers, rows
+
+
+def filter_data(headers, rows, message):
+        print("Filtering with message-------------------:", message)
+        message = message.lower()
+        filtered = rows
+
+        for i, col in enumerate(headers):
+
+            col_clean = col.strip().lower()
+
+            if col_clean in message:
+
+                # BELOW condition
+                if "below" in message:
+                    print("Detected BELOW condition for column:")
+                    try:
+                        value = float(message.split("below")[-1].strip())
+                        filtered = [r for r in filtered if r[i] and float(r[i]) < value]
+                    except:
+                        return []
+
+                # ABOVE condition
+                elif "above" in message:
+                    try:
+                        value = float(message.split("above")[-1].strip())
+                        filtered = [r for r in filtered if r[i] and float(r[i]) > value]
+                    except:
+                        return []
+
+                # TEXT match
+                else:
+                    value = message.split(col_clean)[-1].strip()
+                    filtered = [
+                        r for r in filtered
+                        if r[i] and value.lower() in str(r[i]).lower()
+                    ]
+
+        return filtered
 
 @app.route('/')
 def dashboard():
@@ -77,35 +118,6 @@ def generate_specific_table(headers, rows, required_columns):
     return table_html
 
 # ADD THIS UNIVERSAL FILTER FUNCTION 
-    def filter_data(headers, rows, message):
-        message = message.lower()
-        filtered = rows
-
-        for i, col in enumerate(headers):
-            col_lower = col.lower()
-
-            # BELOW condition
-            if f"{col_lower} below" in message:
-                try:
-                    value = float(message.split(f"{col_lower} below")[-1].strip())
-                    filtered = [r for r in filtered if r[i] and float(r[i]) < value]
-                except:
-                    return []
-
-            # ABOVE condition
-            elif f"{col_lower} above" in message:
-                try:
-                    value = float(message.split(f"{col_lower} above")[-1].strip())
-                    filtered = [r for r in filtered if r[i] and float(r[i]) > value]
-                except:
-                    return []
-
-            # EQUAL / TEXT match
-            elif col_lower in message:
-                value = message.split(col_lower)[-1].strip()
-                filtered = [r for r in filtered if r[i] and value in str(r[i]).lower()]
-
-        return filtered
 
 def chatbot_logic(message):
     message = message.lower().strip()
@@ -126,8 +138,8 @@ def chatbot_logic(message):
     # -------------------------
     # SHOW ALL ASSETS
     # -------------------------
-    elif message == "assets" or "show assets" in message:
-
+    elif message == "assets" in message:
+        print("inside elif search assets------------------")
         table_html = "<table border='1' style='border-collapse:collapse; width:100%; font-size:12px;'>"
 
         table_html += "<tr>"
@@ -148,8 +160,9 @@ def chatbot_logic(message):
 # -------------------------
 # SEARCH ASSET
 # -------------------------
-    elif message.startswith("search asset"):
-        keyword = message.replace("search asset", "").strip().lower()
+    elif message.startswith("show assets"):
+        print("Inside show asset section>>>>>>>>uui>>>>.")
+        keyword = message.replace("show assets", "").strip().lower()
         filtered = [r for r in asset_rows if keyword in str(r).lower()]
 
         if not filtered:
@@ -158,8 +171,8 @@ def chatbot_logic(message):
         return generate_specific_table(asset_headers, filtered, asset_columns)
     
 # REPLACE ASSET SECTION 
-    elif message.startswith("show assets"):
-
+    elif message.startswith("search assets"):
+            print("Inside search assets section>>>>>>>>>uuuu>>>>.")
             filtered = filter_data(asset_headers, asset_rows, message)
 
             print("MESSAGE:", message)
@@ -180,6 +193,7 @@ def chatbot_logic(message):
     # SHOW ALL EMPLOYEES
     # -------------------------
     elif message == "employees" or "show employees" in message:
+        print("inside elif search employees------------------")
         table_html = "<table border='1' style='border-collapse:collapse; width:100%; font-size:12px;'>"
         # add headers
         table_html += "<tr>"
@@ -187,7 +201,7 @@ def chatbot_logic(message):
             table_html += f"<th style='padding:6px; background:#f2f2f2;'>{header}</th>"
         table_html += "</tr>"
         # add first 5 rows 
-        for row in emp_rows[:5]:
+        for row in emp_rows[:20]:
             table_html += "<tr>"
             for cell in row:
                 table_html += f"<td style='padding:6px;'>{cell}</td>"
@@ -202,6 +216,7 @@ def chatbot_logic(message):
     # -------------------------
 
     elif message.startswith("search employee"):
+        print("Inside search employee section>>>>>>>>>>>>>.")
         keyword = message.replace("search employee", "").strip().lower()
         filtered = [r for r in emp_rows if keyword in str(r).lower()]
 
@@ -211,7 +226,8 @@ def chatbot_logic(message):
         return generate_specific_table(emp_headers, filtered, employee_columns)
     
    # REPLACE EMPLOYEE SECTION
-    elif message.startswith("show employees"):
+    elif message.startswith("search employees"):
+        print("Inside search employees section>>>>>>>>>>>>>.")
 
         filtered = filter_data(emp_headers, emp_rows, message)
 
@@ -224,6 +240,7 @@ def chatbot_logic(message):
     # SEARCH EMPLOYEE BY ID
     # -------------------------
     elif "employee" in message:
+        print("Inside search employee by ID section>>>>>>>>>>>>>.")
         words = message.split()
         for word in words:
             for row in emp_rows:
@@ -235,6 +252,7 @@ def chatbot_logic(message):
     # SEARCH ASSET BY NAME
     # -------------------------
     elif "asset" in message:
+        print("Inside search asset by name section>>>>>>>>>>>>>.")
         for row in asset_rows:
             for cell in row:
                 if message in str(cell).lower():
@@ -245,6 +263,7 @@ def chatbot_logic(message):
     # SHOW TRANSACTIONS
     # -------------------------
     elif message == "transactions" or "show transactions" in message:
+        print("inside elif search transactions------------------")
         table_html = "<table border='1' style='border-collapse:collapse; width:100%; font-size:12px;'>"
 
         # Add headers
@@ -267,6 +286,7 @@ def chatbot_logic(message):
     # SEARCH TRANSACTION
     # -------------------------
     elif message.startswith("search transaction"):
+            print("Inside search transaction section>>>>>>>>>>>>>.")
             keyword = message.replace("search transaction", "").strip().lower()
             # filtered = [r for r in trans_rows if keyword in str(r).lower()]
             filtered = []
@@ -283,7 +303,8 @@ def chatbot_logic(message):
             return generate_specific_table(trans_headers, filtered, transaction_columns)
     
    # REPLACE TRANSACTION SECTION
-    elif message.startswith("show transactions"):
+    elif message.startswith("search transactions"):
+        print("Inside search transactions section>>>>>>>>>>>>>.")
 
         filtered = filter_data(trans_headers, trans_rows, message)
 
